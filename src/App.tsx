@@ -3,11 +3,18 @@ import Update from '@/components/update'
 import logoVite from './assets/logo-vite.svg'
 import logoElectron from './assets/logo-electron.svg'
 import './App.scss'
+import { ipcRenderer } from "electron"
 
 console.log('[App.tsx]', `Hello world from Electron ${process.versions.electron}!`)
 
 function App() {
   const [count, setCount] = useState(0)
+
+  const onPromptTouchID = async () => {
+    const result = await ipcRenderer.invoke('prompt-touch-id');
+    console.log('[App.tsx]', 'onPromptTouchID', result)
+  }
+
   return (
     <div className='App'>
       <div className='logo-box'>
@@ -33,6 +40,10 @@ function App() {
       </div>
 
       <Update />
+
+      <button onClick={onPromptTouchID}>
+        Click to prompt Touch ID
+      </button>
     </div>
   )
 }
