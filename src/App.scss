@@ -10,6 +10,33 @@
   height: 9em;
 }
 
+.img-box {
+  background-color: white;
+}
+
+.desc-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.dir-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+
+.dir-box div {
+  background-color: white;
+  padding: 10px;
+  color: black;
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
 .logo {
   position: absolute;
   left: calc(50% - 4.5em);

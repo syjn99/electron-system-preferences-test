@@ -1,7 +1,9 @@
-import { app, BrowserWindow, shell, ipcMain } from 'electron'
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron'
 import { release } from 'node:os'
 import { join } from 'node:path'
 import { update } from './update'
+import fs from 'fs';
+import path from 'path';
 
 // The built directory structure
 //
@@ -119,3 +121,15 @@ ipcMain.handle('open-win', (_, arg) => {
   }
 })
 
+ipcMain.handle('select-dirs', async (event) => {
+  const result = await dialog.showOpenDialog({ properties: ['createDirectory', 'openDirectory'] });
+  return result.filePaths;
+});
+
+ipcMain.handle('write-files', async (event, filePath) => {
+  fs.writeFile(`${filePath}/a.txt`, "This is a file", "utf-8", () => {});
+  fs.writeFile(`${filePath}/b.txt`, "This is b file", "utf-8", () => {});
+  fs.writeFile(`${filePath}/c.txt`, "This is c file", "utf-8", () => {});
+
+  return true;
+});

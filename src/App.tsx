@@ -1,38 +1,56 @@
-import { useState } from 'react'
-import Update from '@/components/update'
-import logoVite from './assets/logo-vite.svg'
-import logoElectron from './assets/logo-electron.svg'
+import {  useState } from 'react'
 import './App.scss'
+import { ipcRenderer } from "electron";
 
 console.log('[App.tsx]', `Hello world from Electron ${process.versions.electron}!`)
 
+
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [selectedDir, setSelectedDir] = useState(__dirname);
+
+  const selectDirectory = async () => {
+    const dirs = await ipcRenderer.invoke('select-dirs');
+    if (dirs && dirs.length > 0) {
+      setSelectedDir(dirs[0]);
+    }
+  };
+
+  const writeFiles = async () => {
+    const result = await ipcRenderer.invoke('write-files', selectedDir);
+    console.log(result);
+  };
+  
+
+  console.log(selectedDir)
+
   return (
     <div className='App'>
-      <div className='logo-box'>
-        <a href='https://github.com/electron-vite/electron-vite-react' target='_blank'>
-          <img src={logoVite} className='logo vite' alt='Electron + Vite logo' />
-          <img src={logoElectron} className='logo electron' alt='Electron + Vite logo' />
-        </a>
-      </div>
-      <h1>Electron + Vite + React</h1>
-      <div className='card'>
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className='read-the-docs'>
-        Click on the Electron + Vite logo to learn more
-      </p>
-      <div className='flex-center'>
-        Place static files into the<code>/public</code> folder <img style={{ width: '5em' }} src='./node.svg' alt='Node logo' />
+      <div>Preparing to download...</div>
+      <div className="img-box">
+        <img
+          src="https://ods-assets.s3.ap-northeast-2.amazonaws.com/TypeLogo/Over.svg"
+          alt="logo"
+          width={200}
+          height={200}
+        />
       </div>
 
-      <Update />
+      <div className="desc-box">
+        <span>현재 노드 데이터를 다운로드 받는데 필요한 용량은 MB 정도 입니다.</span>
+        <span>여유 공간은 MB 정도 필요할 수 있습니다.</span>
+      </div>
+
+      <div className="dir-box">
+        <div title={selectedDir}>{selectedDir}</div>
+        <button onClick={selectDirectory}>Select directory</button>
+      </div>
+
+      <br />
+
+      <button onClick={writeFiles}>
+        Write some files
+      </button>
     </div>
   )
 }
