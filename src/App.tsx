@@ -3,11 +3,38 @@ import Update from '@/components/update'
 import logoVite from './assets/logo-vite.svg'
 import logoElectron from './assets/logo-electron.svg'
 import './App.scss'
+import { ipcRenderer } from "electron"
 
 console.log('[App.tsx]', `Hello world from Electron ${process.versions.electron}!`)
 
 function App() {
   const [count, setCount] = useState(0)
+  const [isPreventAppSuspension, setIsPreventAppSuspension] = useState(false)
+  const [isPreventDisplaySleep, setIsPreventDisplaySleep] = useState(false)
+
+  const onPreventAppSuspension = async () => {
+    if (isPreventAppSuspension) {
+      await ipcRenderer.invoke('allow-app-suspension')
+      setIsPreventAppSuspension(false)
+      return
+    }
+
+    await ipcRenderer.invoke('prevent-app-suspension')
+    setIsPreventAppSuspension(true)
+  }
+
+  const onPreventDisplaySleep = async () => {
+    if (isPreventDisplaySleep) {
+      await ipcRenderer.invoke('allow-display-sleep')
+      setIsPreventDisplaySleep(false)
+      return
+    }
+
+    await ipcRenderer.invoke('prevent-display-sleep')
+    setIsPreventDisplaySleep(true)
+  }
+
+  
   return (
     <div className='App'>
       <div className='logo-box'>
@@ -33,6 +60,14 @@ function App() {
       </div>
 
       <Update />
+
+      <button onClick={onPreventAppSuspension}>
+        {!isPreventAppSuspension ? "Turn 'prevent-app-suspension'": "Turn off 'prevent-app-suspension'"}
+      </button>
+
+      <button onClick={onPreventDisplaySleep}>
+        {!isPreventDisplaySleep ? "Turn 'prevent-display-sleep'": "Turn off 'prevent-display-sleep'"}
+      </button>    
     </div>
   )
 }

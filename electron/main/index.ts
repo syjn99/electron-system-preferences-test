@@ -1,7 +1,8 @@
-import { app, BrowserWindow, shell, ipcMain } from 'electron'
+import { app, BrowserWindow, shell, ipcMain, powerSaveBlocker } from 'electron'
 import { release } from 'node:os'
 import { join } from 'node:path'
 import { update } from './update'
+import { powerMonitoring } from "./powerMonitor"
 
 // The built directory structure
 //
@@ -76,6 +77,9 @@ async function createWindow() {
 
   // Apply electron-updater
   update(win)
+
+  // Apply power-monitoring
+  powerMonitoring(win)
 }
 
 app.whenReady().then(createWindow)
@@ -119,3 +123,29 @@ ipcMain.handle('open-win', (_, arg) => {
   }
 })
 
+let id: number | null = null;
+
+
+ipcMain.handle("allow-app-suspension", () => {
+  if (id) {
+    powerSaveBlocker.stop(id)
+    id = null
+  }
+})
+
+ipcMain.handle("prevent-app-suspension", () => {
+  id = powerSaveBlocker.start('prevent-app-suspension')
+  console.log(powerSaveBlocker.isStarted(id))
+})
+
+ipcMain.handle("allow-display-sleep", () => {
+  if (id) {
+    powerSaveBlocker.stop(id)
+    id = null
+  }
+})
+
+ipcMain.handle("prevent-display-sleep", () => {
+  id = powerSaveBlocker.start('prevent-app-suspension')
+  console.log(powerSaveBlocker.isStarted(id))
+})
