@@ -2,6 +2,7 @@ import { app, BrowserWindow, shell, ipcMain } from 'electron'
 import { release } from 'node:os'
 import { join } from 'node:path'
 import { update } from './update'
+import { pushNotification } from "./pushNotification"
 
 // The built directory structure
 //
@@ -76,6 +77,9 @@ async function createWindow() {
 
   // Apply electron-updater
   update(win)
+
+  // Apply pushNotification
+  pushNotification(win)
 }
 
 app.whenReady().then(createWindow)

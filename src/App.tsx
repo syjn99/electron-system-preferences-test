@@ -3,11 +3,19 @@ import Update from '@/components/update'
 import logoVite from './assets/logo-vite.svg'
 import logoElectron from './assets/logo-electron.svg'
 import './App.scss'
+import { ipcRenderer } from "electron"
 
 console.log('[App.tsx]', `Hello world from Electron ${process.versions.electron}!`)
 
 function App() {
   const [count, setCount] = useState(0)
+
+  const onPushNotificationClick = async () => {
+    const result = await ipcRenderer.invoke('push-notification');
+  }
+
+  console.log(__dirname)
+
   return (
     <div className='App'>
       <div className='logo-box'>
@@ -33,6 +41,10 @@ function App() {
       </div>
 
       <Update />
+
+      <button onClick={onPushNotificationClick}>
+        Click to push notification
+      </button>
     </div>
   )
 }
