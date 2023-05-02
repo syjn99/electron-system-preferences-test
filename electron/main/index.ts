@@ -127,25 +127,35 @@ let id: number | null = null;
 
 
 ipcMain.handle("allow-app-suspension", () => {
-  if (id) {
+  if (id !== null) {
     powerSaveBlocker.stop(id)
     id = null
+
+    win?.webContents.send('main-process-message', 'allow-app-suspension')
   }
 })
 
 ipcMain.handle("prevent-app-suspension", () => {
   id = powerSaveBlocker.start('prevent-app-suspension')
-  console.log(powerSaveBlocker.isStarted(id))
+
+  if (powerSaveBlocker.isStarted(id)) {
+    win?.webContents.send('main-process-message', 'prevent-app-suspension is started')
+  }
 })
 
 ipcMain.handle("allow-display-sleep", () => {
-  if (id) {
+  if (id !== null) {
     powerSaveBlocker.stop(id)
     id = null
+
+    win?.webContents.send('main-process-message', 'allow-display-sleep')
   }
 })
 
 ipcMain.handle("prevent-display-sleep", () => {
-  id = powerSaveBlocker.start('prevent-app-suspension')
-  console.log(powerSaveBlocker.isStarted(id))
+  id = powerSaveBlocker.start('prevent-display-sleep')
+
+  if (powerSaveBlocker.isStarted(id)) {
+    win?.webContents.send('main-process-message', 'prevent-display-sleep is started')
+  }
 })
